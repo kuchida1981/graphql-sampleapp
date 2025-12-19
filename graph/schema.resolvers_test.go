@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jxpress/graphql-sampleapp/graph/model"
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
-	"github.com/jxpress/graphql-sampleapp/internal/repository"
+	"github.com/kuchida1981/graphql-sampleapp/graph/model"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/repository"
 	"github.com/stretchr/testify/assert"
 )
 

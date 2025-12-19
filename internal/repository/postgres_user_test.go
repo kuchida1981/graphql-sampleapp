@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
 )
 
 func TestPostgresUserRepository_List(t *testing.T) {

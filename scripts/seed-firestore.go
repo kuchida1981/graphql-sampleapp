@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	firestoreClient "github.com/jxpress/graphql-sampleapp/internal/firestore"
+	firestoreClient "github.com/kuchida1981/graphql-sampleapp/internal/firestore"
 )
 
 type Message struct {

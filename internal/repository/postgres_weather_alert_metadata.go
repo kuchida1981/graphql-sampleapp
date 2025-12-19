@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
 )
 
 type PostgresWeatherAlertMetadataRepository struct {

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jxpress/graphql-sampleapp/internal/postgres"
+	"github.com/kuchida1981/graphql-sampleapp/internal/postgres"
 )
 
 func main() {

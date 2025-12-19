@@ -11,10 +11,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jxpress/graphql-sampleapp/graph"
-	firestoreClient "github.com/jxpress/graphql-sampleapp/internal/firestore"
-	"github.com/jxpress/graphql-sampleapp/internal/postgres"
-	"github.com/jxpress/graphql-sampleapp/internal/repository"
+	"github.com/kuchida1981/graphql-sampleapp/graph"
+	firestoreClient "github.com/kuchida1981/graphql-sampleapp/internal/firestore"
+	"github.com/kuchida1981/graphql-sampleapp/internal/postgres"
+	"github.com/kuchida1981/graphql-sampleapp/internal/repository"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 

@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/jxpress/graphql-sampleapp/internal/repository"
+import "github.com/kuchida1981/graphql-sampleapp/internal/repository"
 
 // This file will not be regenerated automatically.
 //

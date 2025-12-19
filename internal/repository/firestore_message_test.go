@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
 )
 
 // Note: Firestore SDKは直接的なモッキングが困難なため、

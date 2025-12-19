@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
 )
 
 type MetadataFilter struct {

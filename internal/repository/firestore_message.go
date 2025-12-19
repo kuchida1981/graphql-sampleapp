@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/firestore"
-	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
 	"google.golang.org/api/iterator"
 )
 

@@ -1,4 +1,4 @@
-module github.com/jxpress/graphql-sampleapp
+module github.com/kuchida1981/graphql-sampleapp
 
 go 1.24.0
 
