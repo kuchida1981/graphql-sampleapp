@@ -1,19 +1,19 @@
 # Tasks: Add Testing Framework
 
 ## Task 1: Set up testing dependencies
-- [ ] `go get github.com/DATA-DOG/go-sqlmock`をインストール
-- [ ] `go get github.com/golang/mock/gomock`をインストール (オプション)
-- [ ] `go mod tidy`で依存関係を整理
+- [x] `go get github.com/DATA-DOG/go-sqlmock`をインストール
+- [x] `go get github.com/golang/mock/gomock`をインストール (オプション)
+- [x] `go mod tidy`で依存関係を整理
 - **Validation**: `go.mod`に両パッケージが追加されている
 - **Deliverable**: ユーザーは`go test`を実行できる環境が整う
 
 ## Task 2: Create PostgreSQL User Repository tests
-- [ ] `internal/repository/postgres_user_test.go`を作成
-- [ ] `TestPostgresUserRepository_List`を実装
+- [x] `internal/repository/postgres_user_test.go`を作成
+- [x] `TestPostgresUserRepository_List`を実装
   - 正常系: ユーザーリスト取得成功
   - 異常系: クエリエラー
   - 異常系: スキャンエラー
-- [ ] `TestPostgresUserRepository_GetByID`を実装
+- [x] `TestPostgresUserRepository_GetByID`を実装
   - 正常系: ユーザー取得成功
   - 異常系: ユーザーが見つからない (sql.ErrNoRows)
   - 異常系: スキャンエラー
@@ -21,13 +21,13 @@
 - **Deliverable**: PostgreSQL User Repositoryの全メソッドにテストが存在
 
 ## Task 3: Create Firestore Message Repository tests
-- [ ] `internal/repository/firestore_message_test.go`を作成
-- [ ] Firestoreクライアントのモック実装を作成
-- [ ] `TestFirestoreMessageRepository_List`を実装
+- [x] `internal/repository/firestore_message_test.go`を作成
+- [x] Firestoreクライアントのモック実装を作成
+- [x] `TestFirestoreMessageRepository_List`を実装
   - 正常系: メッセージリスト取得成功
   - 異常系: イテレーションエラー
   - 異常系: データ変換エラー
-- [ ] `TestFirestoreMessageRepository_GetByID`を実装
+- [x] `TestFirestoreMessageRepository_GetByID`を実装
   - 正常系: メッセージ取得成功
   - 異常系: ドキュメントが見つからない
   - 異常系: データ変換エラー
@@ -35,22 +35,22 @@
 - **Deliverable**: Firestore Message Repositoryの全メソッドにテストが存在
 
 ## Task 4: Create PostgreSQL Weather Alert Metadata Repository tests
-- [ ] `internal/repository/postgres_weather_alert_metadata_test.go`を作成
-- [ ] `TestPostgresWeatherAlertMetadataRepository_Search`を実装
+- [x] `internal/repository/postgres_weather_alert_metadata_test.go`を作成
+- [x] `TestPostgresWeatherAlertMetadataRepository_Search`を実装
   - 正常系: フィルタなしで検索
   - 正常系: 地域フィルタ付き検索
   - 正常系: 日時フィルタ付き検索
   - 正常系: 複合フィルタ検索
   - 異常系: クエリエラー
-- [ ] `TestPostgresWeatherAlertMetadataRepository_SearchIDs`を実装
+- [x] `TestPostgresWeatherAlertMetadataRepository_SearchIDs`を実装
   - 正常系: IDリスト取得
   - 異常系: クエリエラー
 - **Validation**: `go test ./internal/repository -run TestPostgresWeatherAlertMetadataRepository`がパスする
 - **Deliverable**: Weather Alert Metadata Repositoryの全メソッドにテストが存在
 
 ## Task 5: Create Firestore Weather Alert Repository tests
-- [ ] `internal/repository/firestore_weather_alert_test.go`を作成
-- [ ] `TestFirestoreWeatherAlertRepository_GetByIDs`を実装
+- [x] `internal/repository/firestore_weather_alert_test.go`を作成
+- [x] `TestFirestoreWeatherAlertRepository_GetByIDs`を実装
   - 正常系: 複数ID指定で取得
   - 正常系: 空のIDリスト
   - 正常系: 一部のIDが存在しないケース
@@ -59,30 +59,30 @@
 - **Deliverable**: Weather Alert Repositoryの全メソッドにテストが存在
 
 ## Task 6: Create GraphQL Resolver tests - Basic queries
-- [ ] `graph/schema.resolvers_test.go`を作成
-- [ ] Repositoryインターフェースのモック実装を作成
+- [x] `graph/schema.resolvers_test.go`を作成
+- [x] Repositoryインターフェースのモック実装を作成
   - `mockUserRepository`
   - `mockMessageRepository`
   - `mockWeatherAlertRepository`
   - `mockWeatherAlertMetadataRepository`
-- [ ] `TestQueryResolver_Hello`を実装
-- [ ] `TestQueryResolver_Users`を実装
+- [x] `TestQueryResolver_Hello`を実装
+- [x] `TestQueryResolver_Users`を実装
   - 正常系: ユーザーリスト取得
   - 異常系: Repositoryエラー
-- [ ] `TestQueryResolver_User`を実装
+- [x] `TestQueryResolver_User`を実装
   - 正常系: 単一ユーザー取得
   - 異常系: ユーザーが見つからない
-- [ ] `TestQueryResolver_Messages`を実装
+- [x] `TestQueryResolver_Messages`を実装
   - 正常系: メッセージリスト取得
   - 異常系: Repositoryエラー
-- [ ] `TestQueryResolver_Message`を実装
+- [x] `TestQueryResolver_Message`を実装
   - 正常系: 単一メッセージ取得
   - 異常系: メッセージが見つからない
 - **Validation**: `go test ./graph -run 'TestQueryResolver_(Hello|Users|User|Messages|Message)'`がパスする
 - **Deliverable**: 基本的なGraphQL queriesのテストが存在
 
 ## Task 7: Create GraphQL Resolver tests - Weather alerts
-- [ ] `TestQueryResolver_WeatherAlerts`を実装
+- [x] `TestQueryResolver_WeatherAlerts`を実装
   - 正常系: フィルタなしで取得
   - 正常系: 地域フィルタ付き取得
   - 正常系: 日時フィルタ付き取得
@@ -95,8 +95,8 @@
 - **Deliverable**: WeatherAlerts queryの全シナリオにテストが存在
 
 ## Task 8: Create TESTING.md documentation
-- [ ] プロジェクトルートに`TESTING.md`を作成
-- [ ] 以下のセクションを記述:
+- [x] プロジェクトルートに`TESTING.md`を作成
+- [x] 以下のセクションを記述:
   - テスト作成の基本方針
   - モッキング戦略
   - テスト命名規則
@@ -106,25 +106,25 @@
   - CI/CD統合
   - 実際のテストコード例
   - 必要な依存ライブラリ
-- [ ] すべての説明を日本語で記述
+- [x] すべての説明を日本語で記述
 - **Validation**: `TESTING.md`が存在し、すべてのセクションが完成している
 - **Deliverable**: チーム全員がテスト作成方法を理解できるドキュメント
 
 ## Task 9: Run all tests and verify
-- [ ] `go test ./...`を実行してすべてのテストがパスすることを確認
-- [ ] `go test -cover ./...`でカバレッジを確認
-- [ ] カバレッジレポートを確認し、主要なコードパスがカバーされていることを検証
+- [x] `go test ./...`を実行してすべてのテストがパスすることを確認
+- [x] `go test -cover ./...`でカバレッジを確認
+- [x] カバレッジレポートを確認し、主要なコードパスがカバーされていることを検証
 - **Validation**: すべてのテストが成功し、エラーがない
 - **Deliverable**: 完全に動作するテストスイート
 
 ## Task 10: Add CI/CD configuration (optional, recommended)
-- [ ] `.github/workflows/test.yml`を作成 (GitHub Actions使用の場合)
-- [ ] 以下のステップを定義:
+- [x] `.github/workflows/test.yml`を作成 (GitHub Actions使用の場合)
+- [x] 以下のステップを定義:
   - Go環境のセットアップ
   - 依存関係のインストール (`go mod download`)
   - テスト実行 (`go test ./...`)
   - カバレッジレポート生成 (オプション)
-- [ ] PRで自動実行されることを確認
+- [x] PRで自動実行されることを確認
 - **Validation**: PRを作成してCI/CDでテストが実行される
 - **Deliverable**: 自動化されたテスト実行環境
 

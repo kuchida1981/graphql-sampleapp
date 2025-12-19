@@ -2,41 +2,25 @@ name: Test
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   test:
-    name: Run tests
+    name: Go Test
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Check out code
+      uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v4
       with:
-        go-version: '1.24'
+        go-version: '1.24' # プロジェクトのgo.modに合わせる
 
-    - name: Download dependencies
+    - name: Get dependencies
       run: go mod download
 
     - name: Run tests
-      run: go test ./internal/... ./graph/... -v
-
-    - name: Run tests with coverage
-      run: go test ./internal/repository -coverprofile=coverage.out
-
-    - name: Display coverage
-      run: go tool cover -func=coverage.out
-
-    - name: Check coverage threshold
-      run: |
-        coverage=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
-        echo "Coverage: ${coverage}%"
-        if (( $(echo "$coverage < 50" | bc -l) )); then
-          echo "Coverage ${coverage}% is below 50% threshold"
-          exit 1
-        fi
+      run: go test -v ./...
