@@ -1,6 +1,6 @@
 # Spec Deltas for Repository Structure
 
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### capability: `repository-structure`
 
