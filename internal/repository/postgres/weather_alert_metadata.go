@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/kuchida1981/graphql-sampleapp/internal/domain"
+	"github.com/kuchida1981/graphql-sampleapp/internal/repository"
 )
 
 type PostgresWeatherAlertMetadataRepository struct {
@@ -18,7 +19,7 @@ func NewPostgresWeatherAlertMetadataRepository(db *sql.DB) *PostgresWeatherAlert
 	return &PostgresWeatherAlertMetadataRepository{db: db}
 }
 
-func (r *PostgresWeatherAlertMetadataRepository) SearchIDs(ctx context.Context, filter MetadataFilter) ([]string, error) {
+func (r *PostgresWeatherAlertMetadataRepository) SearchIDs(ctx context.Context, filter repository.MetadataFilter) ([]string, error) {
 	log.Printf("PostgresWeatherAlertMetadataRepository: Searching IDs with filter: %+v", filter)
 
 	query := "SELECT id FROM weather_alert_metadata"
@@ -72,7 +73,7 @@ func (r *PostgresWeatherAlertMetadataRepository) SearchIDs(ctx context.Context, 
 	return ids, nil
 }
 
-func (r *PostgresWeatherAlertMetadataRepository) Search(ctx context.Context, filter MetadataFilter) ([]*domain.WeatherAlertMetadata, error) {
+func (r *PostgresWeatherAlertMetadataRepository) Search(ctx context.Context, filter repository.MetadataFilter) ([]*domain.WeatherAlertMetadata, error) {
 	log.Printf("PostgresWeatherAlertMetadataRepository: Searching metadata with filter: %+v", filter)
 
 	query := "SELECT id, region, severity, issued_at, created_at FROM weather_alert_metadata"
