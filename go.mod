@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go/firestore v1.20.0
 	firebase.google.com/go/v4 v4.18.0
 	github.com/99designs/gqlgen v0.17.85
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/vektah/gqlparser/v2 v2.5.31
 	google.golang.org/api v0.258.0
