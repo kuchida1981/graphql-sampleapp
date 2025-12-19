@@ -20,15 +20,15 @@ PostgreSQLをバックエンドとして、Userドメインモデルの読み取
 
 ## What Changes
 
-この変更は、以下の5つの新しいcapabilityを導入します:
+この変更は、以下の5つのcapabilityに影響します:
 
-1. **postgresql-client**: PostgreSQL接続とクライアント初期化を実装
-2. **user-repository**: リポジトリパターンによるUserデータアクセス層を実装
-3. **graphql-user-schema**: GraphQLスキーマにUser型とクエリを追加
-4. **user-data-seeding**: PostgreSQL初期化スクリプトとシードデータ投入機能を実装
-5. **docker-compose-postgresql**: Docker ComposeにPostgreSQLサービスを統合
+1. **postgresql-client** (新規spec): PostgreSQL接続とクライアント初期化を実装
+2. **user-repository** (新規spec): リポジトリパターンによるUserデータアクセス層を実装
+3. **graphql-user-schema** (新規spec): GraphQLスキーマにUser型とクエリを追加
+4. **user-data-seeding** (新規spec): PostgreSQL初期化スクリプトとシードデータ投入機能を実装
+5. **docker-compose-setup** (既存spec拡張): Docker ComposeにPostgreSQLサービスを追加
 
-各capabilityの詳細な要件は、`specs/`ディレクトリ内の個別specファイルに定義されています。これらはすべて新規追加（ADDED）要件であり、既存のFirestore機能には影響を与えません。
+各capabilityの詳細な要件は、`specs/`ディレクトリ内の個別specファイルに定義されています。新規4spec + 既存1spec拡張により、既存のFirestore機能に影響を与えることなくPostgreSQL統合を実現します。
 
 ## Scope
 

@@ -1,6 +1,6 @@
-# docker-compose-postgresql Specification Delta
+# docker-compose-setup Specification Delta
 
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: PostgreSQL Service in Docker Compose
 システムはdocker-composeでPostgreSQLコンテナを起動することをMUSTとする。
@@ -27,7 +27,7 @@
 - **THEN** `/docker-entrypoint-initdb.d/init.sql` が自動的に実行される
 - **AND** `users` テーブルが作成される
 
-### Requirement: Application Service Integration
+### Requirement: Application Service PostgreSQL Integration
 システムはアプリケーションサービスからPostgreSQLに接続できることをMUSTとする。
 
 #### Scenario: DATABASE_URL環境変数の設定
