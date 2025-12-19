@@ -18,6 +18,18 @@
 ## Objective
 PostgreSQLをバックエンドとして、Userドメインモデルの読み取り機能をGraphQL API経由で提供する。Firestoreの実装パターン（リポジトリパターン、依存性注入、GraphQLスキーマ拡張）を踏襲し、複数データベースの統合パターンを学習可能にする。
 
+## What Changes
+
+この変更は、以下の5つの新しいcapabilityを導入します:
+
+1. **postgresql-client**: PostgreSQL接続とクライアント初期化を実装
+2. **user-repository**: リポジトリパターンによるUserデータアクセス層を実装
+3. **graphql-user-schema**: GraphQLスキーマにUser型とクエリを追加
+4. **user-data-seeding**: PostgreSQL初期化スクリプトとシードデータ投入機能を実装
+5. **docker-compose-postgresql**: Docker ComposeにPostgreSQLサービスを統合
+
+各capabilityの詳細な要件は、`specs/`ディレクトリ内の個別specファイルに定義されています。これらはすべて新規追加（ADDED）要件であり、既存のFirestore機能には影響を与えません。
+
 ## Scope
 
 ### In Scope
