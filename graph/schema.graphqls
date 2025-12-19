@@ -1,0 +1,5 @@
+# GraphQL schema for Hello World sample
+
+type Query {
+  hello: String!
+}
