@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=graphql_user
+      - POSTGRES_PASSWORD=graphql_pass
+      - POSTGRES_DB=graphql_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+
   firestore:
     image: google/cloud-sdk:emulators
     command: gcloud emulators firestore start --host-port=0.0.0.0:8081
@@ -20,9 +32,14 @@ services:
       - PORT=8080
       - FIRESTORE_EMULATOR_HOST=firestore:8081
       - GCP_PROJECT_ID=demo-project
+      - DATABASE_URL=postgres://graphql_user:graphql_pass@postgres:5432/graphql_db?sslmode=disable
     volumes:
       - ./:/app
     working_dir: /app
     depends_on:
+      - postgres
       - firestore
     command: go run server.go
+
+volumes:
+  postgres_data:

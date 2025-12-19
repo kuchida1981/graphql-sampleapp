@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jxpress/graphql-sampleapp/graph"
 	firestoreClient "github.com/jxpress/graphql-sampleapp/internal/firestore"
+	"github.com/jxpress/graphql-sampleapp/internal/postgres"
 	"github.com/jxpress/graphql-sampleapp/internal/repository"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -38,9 +39,17 @@ func main() {
 	}
 	defer firestoreConn.Close()
 
-	messageRepo := repository.NewFirestoreMessageRepository(firestoreConn)
+	databaseURL := os.Getenv("DATABASE_URL")
+	pgConn, err := postgres.NewClient(ctx, databaseURL)
+	if err != nil {
+		log.Fatalf("Failed to initialize PostgreSQL client: %v", err)
+	}
+	defer pgConn.Close()
 
-	resolver := graph.NewResolver(messageRepo)
+	messageRepo := repository.NewFirestoreMessageRepository(firestoreConn)
+	userRepo := repository.NewPostgresUserRepository(pgConn)
+
+	resolver := graph.NewResolver(messageRepo, userRepo)
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 

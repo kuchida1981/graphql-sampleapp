@@ -6,7 +6,9 @@ GraphQLのベストプラクティスとパターンを学習するためのチ�
 
 - **言語:** Go (Golang)
 - **GraphQLフレームワーク:** gqlgen
-- **データベース:** Cloud Firestore
+- **データベース:**
+  - PostgreSQL - リレーショナルデータ（ユーザー）
+  - Cloud Firestore - ドキュメントストア（メッセージ）
 - **開発環境:** Docker Compose
 
 ## はじめに
@@ -38,17 +40,27 @@ docker-compose logs -f app
 
 #### サンプルデータの投入
 
+Docker Composeで起動している場合、コンテナ内で実行します:
+
 ```bash
-# Firestore Emulatorにサンプルデータを投入
+# PostgreSQLにサンプルユーザーを投入
+docker-compose exec app go run scripts/seed-postgres.go
+
+# Firestore Emulatorにサンプルメッセージを投入
+docker-compose exec app go run scripts/seed-firestore.go
+```
+
+ローカル環境で実行する場合:
+
+```bash
+# PostgreSQLにサンプルユーザーを投入
+export DATABASE_URL="postgres://graphql_user:graphql_pass@localhost:5432/graphql_db?sslmode=disable"
+go run scripts/seed-postgres.go
+
+# Firestore Emulatorにサンプルメッセージを投入
 export FIRESTORE_EMULATOR_HOST=localhost:8081
 export GCP_PROJECT_ID=demo-project
 go run scripts/seed-firestore.go
-```
-
-Docker Composeで起動している場合、コンテナ内で実行することもできます:
-
-```bash
-docker-compose exec app go run scripts/seed-firestore.go
 ```
 
 #### 環境の停止とクリーンアップ
@@ -184,6 +196,70 @@ connect to http://localhost:8080/ for GraphQL playground
 }
 ```
 
+#### 全ユーザーの取得
+
+```graphql
+{
+  users {
+    id
+    name
+    email
+    createdAt
+  }
+}
+```
+
+レスポンス:
+
+```json
+{
+  "data": {
+    "users": [
+      {
+        "id": "user5",
+        "name": "Eve Adams",
+        "email": "eve@example.com",
+        "createdAt": "2025-12-19T17:00:00+09:00"
+      },
+      {
+        "id": "user4",
+        "name": "Diana Prince",
+        "email": "diana@example.com",
+        "createdAt": "2025-12-19T11:00:00+09:00"
+      }
+    ]
+  }
+}
+```
+
+#### 特定のユーザーを取得
+
+```graphql
+{
+  user(id: "user1") {
+    id
+    name
+    email
+    createdAt
+  }
+}
+```
+
+レスポンス:
+
+```json
+{
+  "data": {
+    "user": {
+      "id": "user1",
+      "name": "Alice Smith",
+      "email": "alice@example.com",
+      "createdAt": "2025-12-17T17:00:00+09:00"
+    }
+  }
+}
+```
+
 ### cURLでのクエリ実行
 
 ```bash
@@ -196,6 +272,16 @@ curl -X POST http://localhost:8080/query \
 curl -X POST http://localhost:8080/query \
   -H "Content-Type: application/json" \
   -d '{"query":"{ messages { id content author createdAt } }"}'
+
+# 全ユーザーの取得
+curl -X POST http://localhost:8080/query \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ users { id name email createdAt } }"}'
+
+# 特定のユーザーを取得
+curl -X POST http://localhost:8080/query \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ user(id: \"user1\") { id name email createdAt } }"}'
 ```
 
 ## プロジェクト構造
@@ -215,14 +301,21 @@ curl -X POST http://localhost:8080/query \
 │   └── model/             # GraphQLモデルの型定義
 ├── internal/
 │   ├── domain/            # ドメインモデル
-│   │   └── message.go     # Messageエンティティ
+│   │   ├── message.go     # Messageエンティティ
+│   │   └── user.go        # Userエンティティ
 │   ├── firestore/         # Firestoreクライアント
 │   │   └── client.go      # Firestore初期化
+│   ├── postgres/          # PostgreSQLクライアント
+│   │   └── client.go      # PostgreSQL初期化
 │   └── repository/        # データアクセス層
 │       ├── message.go     # MessageRepositoryインターフェース
-│       └── firestore_message.go # Firestore実装
+│       ├── user.go        # UserRepositoryインターフェース
+│       ├── firestore_message.go # Firestore Message実装
+│       └── postgres_user.go     # PostgreSQL User実装
 ├── scripts/
-│   └── seed-firestore.go  # サンプルデータシードスクリプト
+│   ├── init-postgres.sql  # PostgreSQL初期化スクリプト
+│   ├── seed-postgres.go   # PostgreSQLサンプルデータシード
+│   └── seed-firestore.go  # Firestoreサンプルデータシード
 ├── go.mod                 # Go module定義
 └── go.sum                 # Go依存関係のチェックサム
 ```

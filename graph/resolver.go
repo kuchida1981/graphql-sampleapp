@@ -9,10 +9,12 @@ import "github.com/jxpress/graphql-sampleapp/internal/repository"
 
 type Resolver struct {
 	messageRepo repository.MessageRepository
+	userRepo    repository.UserRepository
 }
 
-func NewResolver(messageRepo repository.MessageRepository) *Resolver {
+func NewResolver(messageRepo repository.MessageRepository, userRepo repository.UserRepository) *Resolver {
 	return &Resolver{
 		messageRepo: messageRepo,
+		userRepo:    userRepo,
 	}
 }
