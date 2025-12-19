@@ -2,4 +2,13 @@
 
 type Query {
   hello: String!
+  messages: [Message!]!
+  message(id: ID!): Message
+}
+
+type Message {
+  id: ID!
+  content: String!
+  author: String!
+  createdAt: String!
 }

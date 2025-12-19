@@ -7,6 +7,9 @@ package graph
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/jxpress/graphql-sampleapp/graph/model"
 )
 
 // Hello is the resolver for the hello field.
@@ -14,24 +17,42 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello World", nil
 }
 
+// Messages is the resolver for the messages field.
+func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
+	messages, err := r.messageRepo.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch messages: %w", err)
+	}
+
+	result := make([]*model.Message, len(messages))
+	for i, msg := range messages {
+		result[i] = &model.Message{
+			ID:        msg.ID,
+			Content:   msg.Content,
+			Author:    msg.Author,
+			CreatedAt: msg.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		}
+	}
+
+	return result, nil
+}
+
+// Message is the resolver for the message field.
+func (r *queryResolver) Message(ctx context.Context, id string) (*model.Message, error) {
+	msg, err := r.messageRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch message: %w", err)
+	}
+
+	return &model.Message{
+		ID:        msg.ID,
+		Content:   msg.Content,
+		Author:    msg.Author,
+		CreatedAt: msg.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	}, nil
+}
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-type mutationResolver struct{ *Resolver }
-*/
