@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/kuchida1981/graphql-sampleapp/internal/repository"
 )
 
 func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
@@ -17,14 +18,14 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		filter  MetadataFilter
+		filter  repository.MetadataFilter
 		mockFn  func(mock sqlmock.Sqlmock)
 		want    int
 		wantErr bool
 	}{
 		{
 			name:   "正常系: フィルタなしで検索",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "region", "severity", "issued_at", "created_at"}).
 					AddRow("alert1", "Tokyo", "warning", now, now).
@@ -37,7 +38,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 		},
 		{
 			name: "正常系: 地域フィルタ付き検索",
-			filter: MetadataFilter{
+			filter: repository.MetadataFilter{
 				Region: &region,
 			},
 			mockFn: func(mock sqlmock.Sqlmock) {
@@ -52,7 +53,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 		},
 		{
 			name: "正常系: 日時フィルタ付き検索",
-			filter: MetadataFilter{
+			filter: repository.MetadataFilter{
 				IssuedAfter: &issuedAfter,
 			},
 			mockFn: func(mock sqlmock.Sqlmock) {
@@ -67,7 +68,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 		},
 		{
 			name: "正常系: 複合フィルタ検索",
-			filter: MetadataFilter{
+			filter: repository.MetadataFilter{
 				Region:      &region,
 				IssuedAfter: &issuedAfter,
 			},
@@ -83,7 +84,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 		},
 		{
 			name:   "異常系: クエリエラー",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery("SELECT id, region, severity, issued_at, created_at FROM weather_alert_metadata ORDER BY issued_at DESC").
 					WillReturnError(errors.New("database connection error"))
@@ -93,7 +94,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search(t *testing.T) {
 		},
 		{
 			name:   "正常系: 結果が0件",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "region", "severity", "issued_at", "created_at"})
 				mock.ExpectQuery("SELECT id, region, severity, issued_at, created_at FROM weather_alert_metadata ORDER BY issued_at DESC").
@@ -139,14 +140,14 @@ func TestPostgresWeatherAlertMetadataRepository_SearchIDs(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		filter  MetadataFilter
+		filter  repository.MetadataFilter
 		mockFn  func(mock sqlmock.Sqlmock)
 		want    []string
 		wantErr bool
 	}{
 		{
 			name:   "正常系: IDリスト取得",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow("alert1").
@@ -160,7 +161,7 @@ func TestPostgresWeatherAlertMetadataRepository_SearchIDs(t *testing.T) {
 		},
 		{
 			name: "正常系: 地域フィルタ付きIDリスト取得",
-			filter: MetadataFilter{
+			filter: repository.MetadataFilter{
 				Region: &region,
 			},
 			mockFn: func(mock sqlmock.Sqlmock) {
@@ -175,7 +176,7 @@ func TestPostgresWeatherAlertMetadataRepository_SearchIDs(t *testing.T) {
 		},
 		{
 			name: "正常系: 日時フィルタ付きIDリスト取得",
-			filter: MetadataFilter{
+			filter: repository.MetadataFilter{
 				IssuedAfter: &issuedAfter,
 			},
 			mockFn: func(mock sqlmock.Sqlmock) {
@@ -191,7 +192,7 @@ func TestPostgresWeatherAlertMetadataRepository_SearchIDs(t *testing.T) {
 		},
 		{
 			name:   "異常系: クエリエラー",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery("SELECT id FROM weather_alert_metadata ORDER BY issued_at DESC").
 					WillReturnError(errors.New("database connection error"))
@@ -201,7 +202,7 @@ func TestPostgresWeatherAlertMetadataRepository_SearchIDs(t *testing.T) {
 		},
 		{
 			name:   "正常系: 結果が0件",
-			filter: MetadataFilter{},
+			filter: repository.MetadataFilter{},
 			mockFn: func(mock sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"})
 				mock.ExpectQuery("SELECT id FROM weather_alert_metadata ORDER BY issued_at DESC").
@@ -264,7 +265,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search_ScanError(t *testing.T) {
 		WillReturnRows(rows)
 
 	repo := NewPostgresWeatherAlertMetadataRepository(db)
-	_, err = repo.Search(context.Background(), MetadataFilter{})
+	_, err = repo.Search(context.Background(), repository.MetadataFilter{})
 
 	if err == nil {
 		t.Error("Search() expected scan error, got nil")
@@ -289,7 +290,7 @@ func TestPostgresWeatherAlertMetadataRepository_Search_RowsError(t *testing.T) {
 		WillReturnRows(rows)
 
 	repo := NewPostgresWeatherAlertMetadataRepository(db)
-	_, err = repo.Search(context.Background(), MetadataFilter{})
+	_, err = repo.Search(context.Background(), repository.MetadataFilter{})
 
 	if err == nil {
 		t.Error("Search() expected row error, got nil")

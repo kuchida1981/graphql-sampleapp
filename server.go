@@ -14,7 +14,8 @@ import (
 	"github.com/kuchida1981/graphql-sampleapp/graph"
 	firestoreClient "github.com/kuchida1981/graphql-sampleapp/internal/firestore"
 	"github.com/kuchida1981/graphql-sampleapp/internal/postgres"
-	"github.com/kuchida1981/graphql-sampleapp/internal/repository"
+	firestoreRepo "github.com/kuchida1981/graphql-sampleapp/internal/repository/firestore"
+	postgresRepo "github.com/kuchida1981/graphql-sampleapp/internal/repository/postgres"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -46,10 +47,10 @@ func main() {
 	}
 	defer pgConn.Close()
 
-	messageRepo := repository.NewFirestoreMessageRepository(firestoreConn)
-	userRepo := repository.NewPostgresUserRepository(pgConn)
-	weatherAlertMetadataRepo := repository.NewPostgresWeatherAlertMetadataRepository(pgConn)
-	weatherAlertRepo := repository.NewFirestoreWeatherAlertRepository(firestoreConn)
+	messageRepo := firestoreRepo.NewFirestoreMessageRepository(firestoreConn)
+	userRepo := postgresRepo.NewPostgresUserRepository(pgConn)
+	weatherAlertMetadataRepo := postgresRepo.NewPostgresWeatherAlertMetadataRepository(pgConn)
+	weatherAlertRepo := firestoreRepo.NewFirestoreWeatherAlertRepository(firestoreConn)
 
 	resolver := graph.NewResolver(messageRepo, userRepo, weatherAlertMetadataRepo, weatherAlertRepo)
 
