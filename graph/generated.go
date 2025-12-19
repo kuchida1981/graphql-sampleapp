@@ -54,11 +54,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Hello    func(childComplexity int) int
-		Message  func(childComplexity int, id string) int
-		Messages func(childComplexity int) int
-		User     func(childComplexity int, id string) int
-		Users    func(childComplexity int) int
+		Hello         func(childComplexity int) int
+		Message       func(childComplexity int, id string) int
+		Messages      func(childComplexity int) int
+		User          func(childComplexity int, id string) int
+		Users         func(childComplexity int) int
+		WeatherAlerts func(childComplexity int, region *string, issuedAfter *string) int
 	}
 
 	User struct {
@@ -66,6 +67,18 @@ type ComplexityRoot struct {
 		Email     func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+	}
+
+	WeatherAlert struct {
+		AffectedAreas   func(childComplexity int) int
+		Description     func(childComplexity int) int
+		ID              func(childComplexity int) int
+		IssuedAt        func(childComplexity int) int
+		RawData         func(childComplexity int) int
+		Recommendations func(childComplexity int) int
+		Region          func(childComplexity int) int
+		Severity        func(childComplexity int) int
+		Title           func(childComplexity int) int
 	}
 }
 
@@ -75,6 +88,7 @@ type QueryResolver interface {
 	Message(ctx context.Context, id string) (*model.Message, error)
 	Users(ctx context.Context) ([]*model.User, error)
 	User(ctx context.Context, id string) (*model.User, error)
+	WeatherAlerts(ctx context.Context, region *string, issuedAfter *string) ([]*model.WeatherAlert, error)
 }
 
 type executableSchema struct {
@@ -161,6 +175,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Users(childComplexity), true
+	case "Query.weatherAlerts":
+		if e.complexity.Query.WeatherAlerts == nil {
+			break
+		}
+
+		args, err := ec.field_Query_weatherAlerts_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.WeatherAlerts(childComplexity, args["region"].(*string), args["issuedAfter"].(*string)), true
 
 	case "User.createdAt":
 		if e.complexity.User.CreatedAt == nil {
@@ -186,6 +211,61 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.User.Name(childComplexity), true
+
+	case "WeatherAlert.affectedAreas":
+		if e.complexity.WeatherAlert.AffectedAreas == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.AffectedAreas(childComplexity), true
+	case "WeatherAlert.description":
+		if e.complexity.WeatherAlert.Description == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.Description(childComplexity), true
+	case "WeatherAlert.id":
+		if e.complexity.WeatherAlert.ID == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.ID(childComplexity), true
+	case "WeatherAlert.issuedAt":
+		if e.complexity.WeatherAlert.IssuedAt == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.IssuedAt(childComplexity), true
+	case "WeatherAlert.rawData":
+		if e.complexity.WeatherAlert.RawData == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.RawData(childComplexity), true
+	case "WeatherAlert.recommendations":
+		if e.complexity.WeatherAlert.Recommendations == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.Recommendations(childComplexity), true
+	case "WeatherAlert.region":
+		if e.complexity.WeatherAlert.Region == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.Region(childComplexity), true
+	case "WeatherAlert.severity":
+		if e.complexity.WeatherAlert.Severity == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.Severity(childComplexity), true
+	case "WeatherAlert.title":
+		if e.complexity.WeatherAlert.Title == nil {
+			break
+		}
+
+		return e.complexity.WeatherAlert.Title(childComplexity), true
 
 	}
 	return 0, false
@@ -325,6 +405,22 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 		return nil, err
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_weatherAlerts_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "region", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["region"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "issuedAfter", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["issuedAfter"] = arg1
 	return args, nil
 }
 
@@ -705,6 +801,67 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_weatherAlerts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_weatherAlerts,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().WeatherAlerts(ctx, fc.Args["region"].(*string), fc.Args["issuedAfter"].(*string))
+		},
+		nil,
+		ec.marshalNWeatherAlert2ᚕᚖgithubᚗcomᚋjxpressᚋgraphqlᚑsampleappᚋgraphᚋmodelᚐWeatherAlertᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_weatherAlerts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WeatherAlert_id(ctx, field)
+			case "region":
+				return ec.fieldContext_WeatherAlert_region(ctx, field)
+			case "severity":
+				return ec.fieldContext_WeatherAlert_severity(ctx, field)
+			case "issuedAt":
+				return ec.fieldContext_WeatherAlert_issuedAt(ctx, field)
+			case "title":
+				return ec.fieldContext_WeatherAlert_title(ctx, field)
+			case "description":
+				return ec.fieldContext_WeatherAlert_description(ctx, field)
+			case "rawData":
+				return ec.fieldContext_WeatherAlert_rawData(ctx, field)
+			case "affectedAreas":
+				return ec.fieldContext_WeatherAlert_affectedAreas(ctx, field)
+			case "recommendations":
+				return ec.fieldContext_WeatherAlert_recommendations(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WeatherAlert", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_weatherAlerts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -919,6 +1076,267 @@ func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.C
 func (ec *executionContext) fieldContext_User_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_id(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_region(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_region,
+		func(ctx context.Context) (any, error) {
+			return obj.Region, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_region(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_severity(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_severity,
+		func(ctx context.Context) (any, error) {
+			return obj.Severity, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_severity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_issuedAt(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_issuedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.IssuedAt, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_issuedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_title(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_title,
+		func(ctx context.Context) (any, error) {
+			return obj.Title, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_description(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_description,
+		func(ctx context.Context) (any, error) {
+			return obj.Description, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_rawData(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_rawData,
+		func(ctx context.Context) (any, error) {
+			return obj.RawData, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_rawData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_affectedAreas(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_affectedAreas,
+		func(ctx context.Context) (any, error) {
+			return obj.AffectedAreas, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_affectedAreas(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WeatherAlert_recommendations(ctx context.Context, field graphql.CollectedField, obj *model.WeatherAlert) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_WeatherAlert_recommendations,
+		func(ctx context.Context) (any, error) {
+			return obj.Recommendations, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_WeatherAlert_recommendations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WeatherAlert",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2560,6 +2978,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "weatherAlerts":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_weatherAlerts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -2619,6 +3059,85 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "createdAt":
 			out.Values[i] = ec._User_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var weatherAlertImplementors = []string{"WeatherAlert"}
+
+func (ec *executionContext) _WeatherAlert(ctx context.Context, sel ast.SelectionSet, obj *model.WeatherAlert) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, weatherAlertImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WeatherAlert")
+		case "id":
+			out.Values[i] = ec._WeatherAlert_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "region":
+			out.Values[i] = ec._WeatherAlert_region(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "severity":
+			out.Values[i] = ec._WeatherAlert_severity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "issuedAt":
+			out.Values[i] = ec._WeatherAlert_issuedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._WeatherAlert_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._WeatherAlert_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "rawData":
+			out.Values[i] = ec._WeatherAlert_rawData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "affectedAreas":
+			out.Values[i] = ec._WeatherAlert_affectedAreas(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "recommendations":
+			out.Values[i] = ec._WeatherAlert_recommendations(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3082,6 +3601,36 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋjxpressᚋgraphqlᚑsampleappᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -3134,6 +3683,60 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋjxpressᚋgraphqlᚑs
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNWeatherAlert2ᚕᚖgithubᚗcomᚋjxpressᚋgraphqlᚑsampleappᚋgraphᚋmodelᚐWeatherAlertᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.WeatherAlert) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNWeatherAlert2ᚖgithubᚗcomᚋjxpressᚋgraphqlᚑsampleappᚋgraphᚋmodelᚐWeatherAlert(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNWeatherAlert2ᚖgithubᚗcomᚋjxpressᚋgraphqlᚑsampleappᚋgraphᚋmodelᚐWeatherAlert(ctx context.Context, sel ast.SelectionSet, v *model.WeatherAlert) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._WeatherAlert(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

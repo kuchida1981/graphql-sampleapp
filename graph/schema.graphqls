@@ -6,6 +6,7 @@ type Query {
   message(id: ID!): Message
   users: [User!]!
   user(id: ID!): User
+  weatherAlerts(region: String, issuedAfter: String): [WeatherAlert!]!
 }
 
 type Message {
@@ -20,4 +21,16 @@ type User {
   name: String!
   email: String!
   createdAt: String!
+}
+
+type WeatherAlert {
+  id: ID!
+  region: String!
+  severity: String!
+  issuedAt: String!
+  title: String!
+  description: String!
+  rawData: String!
+  affectedAreas: [String!]!
+  recommendations: [String!]!
 }

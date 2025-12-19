@@ -18,3 +18,15 @@ type User struct {
 	Email     string `json:"email"`
 	CreatedAt string `json:"createdAt"`
 }
+
+type WeatherAlert struct {
+	ID              string   `json:"id"`
+	Region          string   `json:"region"`
+	Severity        string   `json:"severity"`
+	IssuedAt        string   `json:"issuedAt"`
+	Title           string   `json:"title"`
+	Description     string   `json:"description"`
+	RawData         string   `json:"rawData"`
+	AffectedAreas   []string `json:"affectedAreas"`
+	Recommendations []string `json:"recommendations"`
+}

@@ -8,13 +8,22 @@ import "github.com/jxpress/graphql-sampleapp/internal/repository"
 // here.
 
 type Resolver struct {
-	messageRepo repository.MessageRepository
-	userRepo    repository.UserRepository
+	messageRepo              repository.MessageRepository
+	userRepo                 repository.UserRepository
+	weatherAlertMetadataRepo repository.WeatherAlertMetadataRepository
+	weatherAlertRepo         repository.WeatherAlertRepository
 }
 
-func NewResolver(messageRepo repository.MessageRepository, userRepo repository.UserRepository) *Resolver {
+func NewResolver(
+	messageRepo repository.MessageRepository,
+	userRepo repository.UserRepository,
+	weatherAlertMetadataRepo repository.WeatherAlertMetadataRepository,
+	weatherAlertRepo repository.WeatherAlertRepository,
+) *Resolver {
 	return &Resolver{
-		messageRepo: messageRepo,
-		userRepo:    userRepo,
+		messageRepo:              messageRepo,
+		userRepo:                 userRepo,
+		weatherAlertMetadataRepo: weatherAlertMetadataRepo,
+		weatherAlertRepo:         weatherAlertRepo,
 	}
 }

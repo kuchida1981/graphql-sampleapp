@@ -48,8 +48,10 @@ func main() {
 
 	messageRepo := repository.NewFirestoreMessageRepository(firestoreConn)
 	userRepo := repository.NewPostgresUserRepository(pgConn)
+	weatherAlertMetadataRepo := repository.NewPostgresWeatherAlertMetadataRepository(pgConn)
+	weatherAlertRepo := repository.NewFirestoreWeatherAlertRepository(firestoreConn)
 
-	resolver := graph.NewResolver(messageRepo, userRepo)
+	resolver := graph.NewResolver(messageRepo, userRepo, weatherAlertMetadataRepo, weatherAlertRepo)
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 

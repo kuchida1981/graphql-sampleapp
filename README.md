@@ -7,8 +7,8 @@ GraphQLのベストプラクティスとパターンを学習するためのチ�
 - **言語:** Go (Golang)
 - **GraphQLフレームワーク:** gqlgen
 - **データベース:**
-  - PostgreSQL - リレーショナルデータ（ユーザー）
-  - Cloud Firestore - ドキュメントストア（メッセージ）
+  - PostgreSQL - リレーショナルデータ（ユーザー、気象アラートメタデータ）
+  - Cloud Firestore - ドキュメントストア（メッセージ、気象アラート詳細データ）
 - **開発環境:** Docker Compose
 
 ## はじめに
@@ -48,6 +48,9 @@ docker-compose exec app go run scripts/seed-postgres.go
 
 # Firestore Emulatorにサンプルメッセージを投入
 docker-compose exec app go run scripts/seed-firestore.go
+
+# PostgreSQL + Firestoreにサンプル気象アラートを投入
+docker-compose exec app go run scripts/seed-weather-alerts.go
 ```
 
 ローカル環境で実行する場合:
@@ -61,6 +64,12 @@ go run scripts/seed-postgres.go
 export FIRESTORE_EMULATOR_HOST=localhost:8081
 export GCP_PROJECT_ID=demo-project
 go run scripts/seed-firestore.go
+
+# PostgreSQL + Firestoreにサンプル気象アラートを投入
+export DATABASE_URL="postgres://graphql_user:graphql_pass@localhost:5432/graphql_db?sslmode=disable"
+export FIRESTORE_EMULATOR_HOST=localhost:8081
+export GCP_PROJECT_ID=demo-project
+go run scripts/seed-weather-alerts.go
 ```
 
 #### 環境の停止とクリーンアップ
@@ -259,6 +268,64 @@ connect to http://localhost:8080/ for GraphQL playground
   }
 }
 ```
+
+#### 全気象アラートの取得（ハイブリッドクエリ）
+
+PostgreSQLでメタデータを検索し、Firestoreから詳細データを取得するハイブリッドパターンのデモ:
+
+```graphql
+{
+  weatherAlerts {
+    id
+    region
+    severity
+    issuedAt
+    title
+    description
+    rawData
+    affectedAreas
+    recommendations
+  }
+}
+```
+
+#### 地域で気象アラートをフィルタ
+
+```graphql
+{
+  weatherAlerts(region: "Tokyo") {
+    id
+    region
+    severity
+    issuedAt
+    title
+  }
+}
+```
+
+#### 日時で気象アラートをフィルタ
+
+```graphql
+{
+  weatherAlerts(issuedAfter: "2025-12-19T00:00:00Z") {
+    id
+    region
+    severity
+    issuedAt
+    title
+  }
+}
+```
+
+#### データフロー（PostgreSQL → Firestore）
+
+1. **PostgreSQL**: メタデータ検索（地域・重要度・発行日時でフィルタ）
+2. **結果**: IDリストを取得
+3. **Firestore**: IDリストからバッチで詳細データ取得
+4. **マージ**: PostgreSQLメタデータ + Firestore詳細データ
+5. **レスポンス**: 統合されたWeatherAlertデータ
+
+このパターンにより、スキーマ変更に強い柔軟なデータ構造（Firestore）と効率的な検索・集計（PostgreSQL）を両立できます。
 
 ### cURLでのクエリ実行
 

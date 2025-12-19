@@ -7,9 +7,14 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/jxpress/graphql-sampleapp/graph/model"
+	"github.com/jxpress/graphql-sampleapp/internal/domain"
+	"github.com/jxpress/graphql-sampleapp/internal/repository"
 )
 
 // Hello is the resolver for the hello field.
@@ -85,6 +90,81 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	}, nil
+}
+
+// WeatherAlerts is the resolver for the weatherAlerts field.
+func (r *queryResolver) WeatherAlerts(ctx context.Context, region *string, issuedAfter *string) ([]*model.WeatherAlert, error) {
+	log.Printf("WeatherAlerts resolver called with region=%v, issuedAfter=%v", region, issuedAfter)
+
+	filter := repository.MetadataFilter{
+		Region: region,
+	}
+
+	if issuedAfter != nil {
+		parsedTime, err := time.Parse(time.RFC3339, *issuedAfter)
+		if err != nil {
+			log.Printf("WeatherAlerts: Failed to parse issuedAfter: %v", err)
+			return nil, fmt.Errorf("invalid issuedAfter format, expected ISO8601: %w", err)
+		}
+		filter.IssuedAfter = &parsedTime
+	}
+
+	metadataList, err := r.weatherAlertMetadataRepo.Search(ctx, filter)
+	if err != nil {
+		log.Printf("WeatherAlerts: Failed to search metadata: %v", err)
+		return nil, fmt.Errorf("failed to search weather alerts: %w", err)
+	}
+
+	log.Printf("WeatherAlerts: Found %d metadata records", len(metadataList))
+
+	if len(metadataList) == 0 {
+		return []*model.WeatherAlert{}, nil
+	}
+
+	ids := make([]string, len(metadataList))
+	metadataMap := make(map[string]*domain.WeatherAlertMetadata)
+	for i, metadata := range metadataList {
+		ids[i] = metadata.ID
+		metadataMap[metadata.ID] = metadata
+	}
+
+	weatherAlerts, err := r.weatherAlertRepo.GetByIDs(ctx, ids)
+	if err != nil {
+		log.Printf("WeatherAlerts: Failed to get weather alert details: %v", err)
+		return nil, fmt.Errorf("failed to get weather alert details: %w", err)
+	}
+
+	log.Printf("WeatherAlerts: Retrieved %d weather alerts from Firestore", len(weatherAlerts))
+
+	result := make([]*model.WeatherAlert, 0, len(weatherAlerts))
+	for _, alert := range weatherAlerts {
+		metadata, ok := metadataMap[alert.ID]
+		if !ok {
+			log.Printf("WeatherAlerts: Warning - metadata not found for %s (skipping)", alert.ID)
+			continue
+		}
+
+		rawDataJSON, err := json.Marshal(alert.RawData)
+		if err != nil {
+			log.Printf("WeatherAlerts: Warning - failed to marshal rawData for %s: %v", alert.ID, err)
+			rawDataJSON = []byte("{}")
+		}
+
+		result = append(result, &model.WeatherAlert{
+			ID:              alert.ID,
+			Region:          metadata.Region,
+			Severity:        metadata.Severity,
+			IssuedAt:        metadata.IssuedAt.Format("2006-01-02T15:04:05Z07:00"),
+			Title:           alert.Title,
+			Description:     alert.Description,
+			RawData:         string(rawDataJSON),
+			AffectedAreas:   alert.AffectedAreas,
+			Recommendations: alert.Recommendations,
+		})
+	}
+
+	log.Printf("WeatherAlerts: Returning %d weather alerts", len(result))
+	return result, nil
 }
 
 // Query returns QueryResolver implementation.
